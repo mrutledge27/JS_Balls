@@ -17,8 +17,16 @@
 	function Circle(cx, cy, html_id, size)
 	{
 		var html_id = html_id;
+		this.id = html_id;
 		this.info = { cx: cx,  cy: cy };
-		this.size = size;
+		if (size)
+		{
+			this.size = size;
+		}
+		else
+		{
+			this.size = 10;
+		}
 		
 		//private function that generates a random number
 		var randomNumberBetween = function(min, max){
@@ -31,7 +39,7 @@
 				x: randomNumberBetween(-3,3),
 				y: randomNumberBetween(-3,3)
 			}
-
+			console.log(this);
 			//create a circle 
 			var circle = makeSVG('circle', 
 				{ 	cx: this.info.cx,
@@ -48,7 +56,7 @@
 			var el = document.getElementById(html_id);
 
 			//see if the circle is going outside the browser. if it is, reverse the velocity
-			if( this.info.cx > (document.body.clientWidth-this.size) || this.info.cx < this.size)
+			if( this.info.cx > (document.body.clientWidth-this.size-15) || this.info.cx < this.size)
 			{
 				this.info.velocity.x = this.info.velocity.x * -1;
 			}
@@ -56,6 +64,8 @@
 			{
 				this.info.velocity.y = this.info.velocity.y * -1;
 			}
+
+
 
 			this.info.cx = this.info.cx + this.info.velocity.x*time;
 			this.info.cy = this.info.cy + this.info.velocity.y*time;
@@ -87,6 +97,20 @@
 			for(circle in circles)
 			{
 				circles[circle].update(1);
+				for (test in circles)
+				{
+					// console.log(circles[circle].id);
+					// console.log(circles[test].id);
+					if (circles[test].id != circles[circle].id)
+					{
+						if (Math.abs(Math.floor(circles[test].info.cx)-Math.floor(circles[circle].info.cx)) < (circles[test].size + circles[circle].size)
+							&& Math.abs(Math.floor(circles[test].info.cy)-Math.floor(circles[circle].info.cy)) < (circles[test].size + circles[circle].size))
+						{
+							delete circles[circle];
+							delete circles[test];
+						}						
+					}
+				}
 			}
 		}
 
@@ -98,6 +122,22 @@
 
 		//create one circle when the game starts
 		this.createNewCircle(document.body.clientWidth/2, document.body.clientHeight/2);
+	}
+
+	function fadeOut(circle)
+	{
+		var element = getElementById(circle.id);
+		console.log(circle);
+		var op = 1;
+		var timer = setInterval(function (){
+			if (op <= 0.1){
+				clearInterval(timer);
+			}
+			element.style.opacity = op;
+			element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+			op += op * 0.1;
+			alert('here');
+		}, 10);
 	}
 
 	var playground = new PlayGround();
